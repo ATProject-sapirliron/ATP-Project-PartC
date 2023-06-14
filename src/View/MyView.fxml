@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import View.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import View.MazeDisplayer?>
-<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController">
+<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController">
   <left>
     <VBox prefHeight="200.0" prefWidth="178.0" spacing="5.0" BorderPane.alignment="CENTER">
       <children>
@@ -44,6 +33,8 @@
           <Label fx:id="playerRow" GridPane.columnIndex="1" GridPane.rowIndex="4" />
           <Label fx:id="playerCol" GridPane.columnIndex="1" GridPane.rowIndex="5" />
         </GridPane>
+            <Button mnemonicParsing="false" text="Save" />
+            <Button mnemonicParsing="false" text="Load" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -86,7 +77,7 @@
   <center>
     <Pane BorderPane.alignment="CENTER">
       <children>
-        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.jpg" imageFileNameWall="./resources/images/wall.png" onKeyPressed="#keyPressed" width="700.0" layoutY="15.0" layoutX="40.0"/>
+        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.jpg" imageFileNameWall="./resources/images/wall.png" layoutX="40.0" layoutY="15.0" onKeyPressed="#keyPressed" width="700.0" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

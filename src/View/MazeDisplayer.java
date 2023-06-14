@@ -1,7 +1,6 @@
 package View;
 
 import algorithms.mazeGenerators.Maze;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.Canvas;

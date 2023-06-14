@@ -2,21 +2,26 @@ package View;
 
 import algorithms.mazeGenerators.Maze;
 import algorithms.mazeGenerators.MyMazeGenerator;
-import algorithms.search.*;
+import algorithms.search.BestFirstSearch;
+import algorithms.search.ISearchingAlgorithm;
+import algorithms.search.SearchableMaze;
+import algorithms.search.Solution;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 
 public class MyViewController implements IView {
     public MyMazeGenerator generator;
@@ -26,6 +31,7 @@ public class MyViewController implements IView {
     public Label playerRow;
     public Label playerCol;
     public Maze maze;
+    private MediaPlayer mediaPlayer;
 
     StringProperty updatePlayerRow = new SimpleStringProperty();
     StringProperty updatePlayerCol = new SimpleStringProperty();
@@ -48,6 +54,13 @@ public class MyViewController implements IView {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Initialize the MediaPlayer
+        String musicFile = "resources/music/videoplayback.mp4"; // Replace with the actual path to your MP4 file
+        Media media = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setAutoPlay(true);
+
+        // Other initialization code
         playerRow.textProperty().bind(updatePlayerRow);
         playerCol.textProperty().bind(updatePlayerCol);
     }
@@ -94,11 +107,38 @@ public class MyViewController implements IView {
         int row = mazeDisplayer.getPlayerRow();
         int col = mazeDisplayer.getPlayerCol();
         switch (keyEvent.getCode()) {
-                case UP -> row = checkIfCanMoveUp(row,col);
-                case DOWN -> row = checkIfCanMoveDown(row,col);
-                case RIGHT -> col = checkIfCanMoveRight(row,col);
-                case LEFT -> col = checkIfCanMoveLeft(row, col);
-
+            case DIGIT8 -> row = checkIfCanMoveUp(row,col);
+            case DIGIT2 -> row = checkIfCanMoveDown(row,col);
+            case DIGIT6 -> col = checkIfCanMoveRight(row,col);
+            case DIGIT4 -> col = checkIfCanMoveLeft(row, col);
+            case DIGIT1 -> {
+                if((checkIfCanMoveDown(row, col)!=row)&&(checkIfCanMoveLeft(row, col)!=col)&&
+                        (row+1>=0)&&(col-1<=maze.getCol()-1)&&(maze.getplacevalue(row+1, col-1)==0)){
+                    row = checkIfCanMoveDown(row, col);
+                    col = checkIfCanMoveLeft(row, col);
+                }
+            }
+            case DIGIT3 -> {
+                if((checkIfCanMoveDown(row, col)!=row)&&(checkIfCanMoveRight(row, col)!=col)&&
+                        (row+1>=0)&&(col+1<=maze.getCol()-1)&&(maze.getplacevalue(row+1, col+1)==0)){
+                    row = checkIfCanMoveDown(row, col);
+                    col = checkIfCanMoveRight(row, col);
+                }
+            }
+            case DIGIT7 -> {
+                if((checkIfCanMoveUp(row, col)!=row)&&(checkIfCanMoveLeft(row, col)!=col)&&
+                        (row-1>=0)&&(col-1<=maze.getCol()-1)&&(maze.getplacevalue(row-1, col-1)==0)){
+                    row = checkIfCanMoveUp(row, col);
+                    col = checkIfCanMoveLeft(row, col);
+                }
+            }
+            case DIGIT9 -> {
+                if((checkIfCanMoveUp(row, col)!=row)&&(checkIfCanMoveRight(row, col)!=col)&&
+                        (row-1>=0)&&(col+1<=maze.getCol()-1)&&(maze.getplacevalue(row-1, col+1)==0)){
+                    row = checkIfCanMoveUp(row, col);
+                    col = checkIfCanMoveRight(row, col);
+                }
+            }
         }
         if(row==maze.getRow()-1 && col == maze.getCol()-1){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
