@@ -19,6 +19,7 @@ public class MazeDisplayer extends Canvas {
     private int playerCol = 0;
     // wall and player images:
     StringProperty imageFileNameWall = new SimpleStringProperty();
+    StringProperty imageFileNameGoal = new SimpleStringProperty();
     StringProperty imageFileNamePlayer = new SimpleStringProperty();
 
 
@@ -49,6 +50,7 @@ public class MazeDisplayer extends Canvas {
     }
 
     public String getImageFileNamePlayer() {
+
         return imageFileNamePlayer.get();
     }
 
@@ -56,8 +58,16 @@ public class MazeDisplayer extends Canvas {
         return imageFileNamePlayer.get();
     }
 
+    public String getImageFileNameGoal() {
+        return imageFileNameGoal.get();
+    }
+
     public void setImageFileNamePlayer(String imageFileNamePlayer) {
         this.imageFileNamePlayer.set(imageFileNamePlayer);
+    }
+
+    public void setImageFileNameGoal(String imageFileNameGoal) {
+        this.imageFileNameGoal.set(imageFileNameGoal);
     }
 
     public void drawMaze(Maze maze) {
@@ -81,6 +91,7 @@ public class MazeDisplayer extends Canvas {
 
             drawMazeWalls(graphicsContext, cellHeight, cellWidth, rows, cols);
             drawPlayer(graphicsContext, cellHeight, cellWidth);
+            drawGoal(graphicsContext, cellHeight, cellWidth);
         }
     }
 
@@ -124,5 +135,45 @@ public class MazeDisplayer extends Canvas {
             graphicsContext.fillRect(x, y, cellWidth, cellHeight);
         else
             graphicsContext.drawImage(playerImage, x, y, cellWidth, cellHeight);
+    }
+
+    private void drawGoal(GraphicsContext graphicsContext, double cellHeight, double cellWidth) {
+        double x = (maze.getCol()-1) * cellWidth;
+        double y = (maze.getRow()-1) * cellHeight;
+        graphicsContext.setFill(Color.GREEN);
+
+        Image GoalImage = null;
+        try {
+            GoalImage = new Image(new FileInputStream(getImageFileNameGoal()));
+        } catch (FileNotFoundException e) {
+            System.out.println("There is no goal image file");
+        }
+        if(GoalImage == null)
+            graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+        else
+            graphicsContext.drawImage(GoalImage, x, y, cellWidth, cellHeight);
+
+    }
+
+
+
+        public void paintPosition(int r,int c) {
+        if (maze != null) {
+            double canvasHeight = getHeight();
+            double canvasWidth = getWidth();
+            int rows = maze.getRow();
+            int cols = maze.getCol();
+
+            double cellHeight = canvasHeight / rows;
+            double cellWidth = canvasWidth / cols;
+
+            GraphicsContext graphicsContext = getGraphicsContext2D();
+            double x = c * cellWidth;
+            double y = r * cellHeight;
+            graphicsContext.setFill(Color.GREEN);
+            if(this.maze.getplacevalue(r,c)==0){
+                graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+            }
+        }
     }
 }

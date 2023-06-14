@@ -2,9 +2,11 @@ package View;
 
 import algorithms.mazeGenerators.Maze;
 import algorithms.mazeGenerators.MyMazeGenerator;
+import algorithms.search.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -23,6 +25,7 @@ public class MyViewController implements IView {
     public MazeDisplayer mazeDisplayer;
     public Label playerRow;
     public Label playerCol;
+    public Maze maze;
 
     StringProperty updatePlayerRow = new SimpleStringProperty();
     StringProperty updatePlayerCol = new SimpleStringProperty();
@@ -56,16 +59,26 @@ public class MyViewController implements IView {
         int rows = Integer.valueOf(textField_mazeRows.getText());
         int cols = Integer.valueOf(textField_mazeColumns.getText());
 
-        Maze maze = generator.generate(rows, cols);
+        maze = generator.generate(rows, cols);
 
         mazeDisplayer.drawMaze(maze);
         setPlayerPosition(0, 0);
     }
 
     public void solveMaze(ActionEvent actionEvent) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("Solving maze...");
-        alert.show();
+        alert.show();*/
+        SearchableMaze searchableMaze = new SearchableMaze(maze);
+        ISearchingAlgorithm searcher = new BestFirstSearch();
+        Solution solution = searcher.solve(searchableMaze);
+        for(int i=0; i<solution.getSolutionPath().size();i++){
+            int r = solution.getSolutionPath().get(i).getRow();
+            int c = solution.getSolutionPath().get(i).getCol();
+            if(maze.getplacevalue(r,c)==0){
+                mazeDisplayer.paintPosition(r,c);
+            }
+        }
     }
 
     public void openFile(ActionEvent actionEvent) {
@@ -80,16 +93,53 @@ public class MyViewController implements IView {
     public void keyPressed(KeyEvent keyEvent) {
         int row = mazeDisplayer.getPlayerRow();
         int col = mazeDisplayer.getPlayerCol();
-
         switch (keyEvent.getCode()) {
-            case UP -> row -= 1;
-            case DOWN -> row += 1;
-            case RIGHT -> col += 1;
-            case LEFT -> col -= 1;
+                case UP -> row = checkIfCanMoveUp(row,col);
+                case DOWN -> row = checkIfCanMoveDown(row,col);
+                case RIGHT -> col = checkIfCanMoveRight(row,col);
+                case LEFT -> col = checkIfCanMoveLeft(row, col);
+
+        }
+        if(row==maze.getRow()-1 && col == maze.getCol()-1){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Game End!");
+            alert.show();
         }
         setPlayerPosition(row, col);
 
         keyEvent.consume();
+    }
+    public int checkIfCanMoveUp(int row, int col){
+        if(row-1>=0){
+            if(maze.getplacevalue(row-1,col)==0){
+                return row-1;
+            }
+        }
+        return row;
+    }
+    public int checkIfCanMoveDown(int row, int col){
+        if(row+1<=maze.getRow()-1){
+            if(maze.getplacevalue(row+1,col)==0){
+                return row+1;
+            }
+        }
+        return row;
+    }
+    public int checkIfCanMoveRight(int row, int col){
+        if(col+1<=maze.getCol()-1){
+            if(maze.getplacevalue(row,col+1)==0){
+                return col+1;
+            }
+        }
+        return col;
+    }
+    public int checkIfCanMoveLeft(int row, int col){
+        if(col-1>=0){
+            if(maze.getplacevalue(row,col-1)==0){
+                return col-1;
+            }
+        }
+        return col;
     }
 
     public void setPlayerPosition(int row, int col){
