@@ -1,5 +1,7 @@
 package View;
 
+import Model.IModel;
+import ViewModel.MyViewModel;
 import algorithms.mazeGenerators.Maze;
 import algorithms.mazeGenerators.MyMazeGenerator;
 import algorithms.search.BestFirstSearch;
@@ -20,11 +22,12 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.ResourceBundle;
 
 
-public class MyViewController implements IView {
-    public MyMazeGenerator generator;
+public class MyViewController implements IView, Observer {
     public TextField textField_mazeRows;
     public TextField textField_mazeColumns;
     public MazeDisplayer mazeDisplayer;
@@ -32,6 +35,9 @@ public class MyViewController implements IView {
     public Label playerCol;
     public Maze maze;
     private MediaPlayer mediaPlayer;
+    private MyViewModel viewModel;
+
+    private MyMazeGenerator generator;
 
     StringProperty updatePlayerRow = new SimpleStringProperty();
     StringProperty updatePlayerCol = new SimpleStringProperty();
@@ -104,6 +110,7 @@ public class MyViewController implements IView {
     }
 
     public void keyPressed(KeyEvent keyEvent) {
+        viewModel.movePlayer(keyEvent);
         int row = mazeDisplayer.getPlayerRow();
         int col = mazeDisplayer.getPlayerCol();
         switch (keyEvent.getCode()) {
@@ -146,7 +153,6 @@ public class MyViewController implements IView {
             alert.show();
         }
         setPlayerPosition(row, col);
-
         keyEvent.consume();
     }
     public int checkIfCanMoveUp(int row, int col){
@@ -190,5 +196,44 @@ public class MyViewController implements IView {
 
     public void mouseClicked(MouseEvent mouseEvent) {
         mazeDisplayer.requestFocus();
+    }
+
+    public void setViewModel(MyViewModel viewModel) {
+
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o instanceof MyViewModel){
+            if(maze ==null){
+                this.maze = viewModel.getMaze();
+                drawMaze();
+            }
+            else{
+                Maze maze = viewModel.getMaze();
+                if(maze ==this.maze){
+                    int rowChar = mazeDisplayer.getPlayerRow();
+                    int colChar = mazeDisplayer.getPlayerCol();
+                    int rowFromViewModel = viewModel.getRowChar();
+                    int colFromViewModel = viewModel.getColChar();
+                    if(rowFromViewModel == colChar && colFromViewModel == rowChar){
+                        viewModel.getSolution();
+                    }
+                    else{
+                        setUpdatePlayerRow(rowFromViewModel);
+                        setUpdatePlayerCol(colFromViewModel);
+                        setPlayerPosition(rowFromViewModel,colFromViewModel);
+                    }
+                }
+                else{
+                    this.maze = maze;
+                    drawMaze();
+                }
+            }
+        }
+    }
+
+    public void drawMaze(){
+        mazeDisplayer.drawMaze(maze);
     }
 }
