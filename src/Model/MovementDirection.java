@@ -1,5 +1,5 @@
 package Model;
 
 public enum MovementDirection {
-    UP, DOWN, LEFT, RIGHT
+    DIGIT1, DIGIT2, DIGIT3, DIGIT4, DIGIT6, DIGIT7, DIGIT8, DIGIT9
 }

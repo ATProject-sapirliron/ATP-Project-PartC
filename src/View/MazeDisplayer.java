@@ -1,6 +1,10 @@
 package View;
 
 import algorithms.mazeGenerators.Maze;
+import algorithms.search.BestFirstSearch;
+import algorithms.search.ISearchingAlgorithm;
+import algorithms.search.SearchableMaze;
+import algorithms.search.Solution;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.canvas.Canvas;
@@ -13,6 +17,8 @@ import java.io.FileNotFoundException;
 
 public class MazeDisplayer extends Canvas {
     private Maze maze;
+    private Solution solution;
+
     // player position:
     private int playerRow = 0;
     private int playerCol = 0;
@@ -33,6 +39,11 @@ public class MazeDisplayer extends Canvas {
     public void setPlayerPosition(int row, int col) {
         this.playerRow = row;
         this.playerCol = col;
+        draw();
+    }
+
+    public void setSolution(Solution solution) {
+        this.solution = solution;
         draw();
     }
 
@@ -91,7 +102,22 @@ public class MazeDisplayer extends Canvas {
             drawMazeWalls(graphicsContext, cellHeight, cellWidth, rows, cols);
             drawPlayer(graphicsContext, cellHeight, cellWidth);
             drawGoal(graphicsContext, cellHeight, cellWidth);
+            if(solution!=null){
+                drawSolution(graphicsContext, cellHeight, cellWidth);
+            }
         }
+    }
+
+    private void drawSolution(GraphicsContext graphicsContext, double cellHeight, double cellWidth) {
+        // need to be implemented
+        for(int i=0; i<solution.getSolutionPath().size();i++){
+            int r = solution.getSolutionPath().get(i).getRow();
+            int c = solution.getSolutionPath().get(i).getCol();
+            if(maze.getplacevalue(r,c)==0){
+                paintPosition(r,c);
+            }
+        }
+        System.out.println("drawing solution...");
     }
 
     private void drawMazeWalls(GraphicsContext graphicsContext, double cellHeight, double cellWidth, int rows, int cols) {
@@ -154,9 +180,7 @@ public class MazeDisplayer extends Canvas {
 
     }
 
-
-
-        public void paintPosition(int r,int c) {
+    public void paintPosition(int r,int c) {
         if (maze != null) {
             double canvasHeight = getHeight();
             double canvasWidth = getWidth();

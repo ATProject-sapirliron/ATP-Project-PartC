@@ -12,7 +12,7 @@ public interface IModel{
     public int getPlayerCol();
     public void updatePlayerLocation(MovementDirection direction);
     public void assignObserver(Observer o);
-    public void solveMaze(Maze maze);
+    public void solveMaze();
     public Solution getSolution();
 
 }
