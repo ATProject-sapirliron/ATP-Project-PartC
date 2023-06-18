@@ -1,12 +1,6 @@
 package View;
 
 import ViewModel.MyViewModel;
-import algorithms.mazeGenerators.Maze;
-import algorithms.mazeGenerators.MyMazeGenerator;
-import algorithms.search.BestFirstSearch;
-import algorithms.search.ISearchingAlgorithm;
-import algorithms.search.SearchableMaze;
-import algorithms.search.Solution;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -14,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 
@@ -22,6 +17,11 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 
 public class MyViewController implements IView, Observer {
@@ -30,10 +30,10 @@ public class MyViewController implements IView, Observer {
     public MazeDisplayer mazeDisplayer;
     public Label playerRow;
     public Label playerCol;
-    private MediaPlayer mediaPlayer;
     private MyViewModel viewModel;
 
-    private MyMazeGenerator generator;
+    private Clip theclip;
+
 
     StringProperty updatePlayerRow = new SimpleStringProperty();
     StringProperty updatePlayerCol = new SimpleStringProperty();
@@ -43,7 +43,7 @@ public class MyViewController implements IView, Observer {
     }
 
     public void setUpdatePlayerRow(int updatePlayerRow) {
-        this.updatePlayerRow.set(updatePlayerRow + "");
+        this.playerRow.textProperty().set(updatePlayerRow + "");
     }
 
     public String getUpdatePlayerCol() {
@@ -51,20 +51,16 @@ public class MyViewController implements IView, Observer {
     }
 
     public void setUpdatePlayerCol(int updatePlayerCol) {
-        this.updatePlayerCol.set(updatePlayerCol + "");
+        this.playerCol.textProperty().set(updatePlayerCol + "");
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize the MediaPlayer
-        /*String musicFile = "resources/music/videoplayback.mp4"; // Replace with the actual path to your MP4 file
-        Media media = new Media(new File(musicFile).toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setAutoPlay(true);*/
-
         // Other initialization code
         playerRow.textProperty().bind(updatePlayerRow);
         playerCol.textProperty().bind(updatePlayerCol);
+        String filepath = "resources/music/Untitled.wav";
+        theclip = playMusic(filepath);
     }
 
     public void generateMaze(ActionEvent actionEvent) {
@@ -72,6 +68,34 @@ public class MyViewController implements IView, Observer {
         int cols = Integer.valueOf(textField_mazeColumns.getText());
         viewModel.generateMaze(rows, cols);
         setPlayerPosition(0, 0);
+        theclip.stop();
+        String filepath = "resources/music/WiliWonka.wav";
+        theclip = playMusic(filepath);
+    }
+
+    public Clip playMusic(String filepath){
+        try{
+            File musicpath = new File(filepath);
+            if(musicpath.exists()){
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicpath);
+                theclip = AudioSystem.getClip();
+                theclip.open(audioInput);
+                theclip.start();
+                return theclip;
+            }
+            else{
+                System.out.println("cant find file");
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+
+        }
+        return null;
+    }
+
+    public void stopMusic(Clip c){
+        c.stop();
     }
 
     public void solveMaze(ActionEvent actionEvent) {
@@ -126,9 +150,14 @@ public class MyViewController implements IView, Observer {
 
     private void playerMoved() {
         setPlayerPosition(viewModel.getRowChar(), viewModel.getColChar());
+        if((viewModel.getColChar()==viewModel.getMaze().getCol()-1) &&(viewModel.getRowChar()==viewModel.getMaze().getRow()-1)){
+            theclip.stop();
+            playMusic("resources/music/clap.wav");
+        }
     }
 
     private void mazeGenerated() {
+        mazeDisplayer.setSolution(null);
         mazeDisplayer.drawMaze(viewModel.getMaze());
     }
 

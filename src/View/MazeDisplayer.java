@@ -1,9 +1,6 @@
 package View;
 
 import algorithms.mazeGenerators.Maze;
-import algorithms.search.BestFirstSearch;
-import algorithms.search.ISearchingAlgorithm;
-import algorithms.search.SearchableMaze;
 import algorithms.search.Solution;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -98,13 +95,15 @@ public class MazeDisplayer extends Canvas {
             GraphicsContext graphicsContext = getGraphicsContext2D();
             //clear the canvas:
             graphicsContext.clearRect(0, 0, canvasWidth, canvasHeight);
-
             drawMazeWalls(graphicsContext, cellHeight, cellWidth, rows, cols);
-            drawPlayer(graphicsContext, cellHeight, cellWidth);
-            drawGoal(graphicsContext, cellHeight, cellWidth);
+            if(solution==null){
+                resetMazeColor(graphicsContext, cellHeight, cellWidth);
+            }
             if(solution!=null){
                 drawSolution(graphicsContext, cellHeight, cellWidth);
             }
+            drawPlayer(graphicsContext, cellHeight, cellWidth);
+            drawGoal(graphicsContext, cellHeight, cellWidth);
         }
     }
 
@@ -177,7 +176,6 @@ public class MazeDisplayer extends Canvas {
             graphicsContext.fillRect(x, y, cellWidth, cellHeight);
         else
             graphicsContext.drawImage(GoalImage, x, y, cellWidth, cellHeight);
-
     }
 
     public void paintPosition(int r,int c) {
@@ -190,13 +188,42 @@ public class MazeDisplayer extends Canvas {
             double cellHeight = canvasHeight / rows;
             double cellWidth = canvasWidth / cols;
 
+
             GraphicsContext graphicsContext = getGraphicsContext2D();
             double x = c * cellWidth;
             double y = r * cellHeight;
-            graphicsContext.setFill(Color.GREEN);
+
+            // Clear the entire cell
+            graphicsContext.clearRect(x, y, cellWidth, cellHeight);
+            // Fill the cell with lavender color
+            graphicsContext.setFill(Color.LAVENDER);
+            graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+
             if(this.maze.getplacevalue(r,c)==0){
-                graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+                Image image = new Image(getClass().getResourceAsStream("/images/jelly.png"));
+                graphicsContext.setGlobalAlpha(0.5);
+                graphicsContext.drawImage(image, x, y, cellWidth, cellHeight);
+                graphicsContext.setGlobalAlpha(1.0);
             }
         }
     }
+
+    public void resetMazeColor(GraphicsContext graphicsContext, double cellHeight, double cellWidth) {
+        graphicsContext.setFill(Color.LAVENDER);
+        if (maze != null) {
+            for (int r = 0; r < maze.getRow(); r++) {
+                for (int c = 0; c < maze.getCol(); c++) {
+                    double x = c * cellWidth;
+                    double y = r * cellHeight;
+                    if (maze.getplacevalue(r, c) == 0) {
+                        graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 }

@@ -22,6 +22,8 @@ public class Main extends Application {
         IModel model = new MyModel();
         MyViewModel viewModel = new MyViewModel(model);
         MyViewController view = fxmlLoader.getController();
+        String filepath = "resources/music/Untitled.wav";
+        view.playMusic(filepath);
         view.setViewModel(viewModel);
         viewModel.addObserver(view);
     }

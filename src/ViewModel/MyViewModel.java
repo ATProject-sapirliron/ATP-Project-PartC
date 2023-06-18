@@ -2,10 +2,8 @@ package ViewModel;
 
 import Model.IModel;
 import Model.MovementDirection;
-import View.MazeDisplayer;
 import algorithms.mazeGenerators.Maze;
 import algorithms.search.Solution;
-import javafx.scene.control.Alert;
 import javafx.scene.input.KeyEvent;
 
 import java.util.Observable;

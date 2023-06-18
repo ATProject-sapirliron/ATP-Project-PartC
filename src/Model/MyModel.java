@@ -38,6 +38,8 @@ public class MyModel extends Observable implements IModel{
     @Override
     public void generateMaze(int rows, int cols) {
         maze = generator.generate(rows,cols);
+        PlayerRow = 0;
+        PlayerCol = 0;
         setChanged();
         notifyObservers("maze generated");
     }
