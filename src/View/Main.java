@@ -26,6 +26,7 @@ public class Main extends Application {
         view.playMusic(filepath);
         view.setViewModel(viewModel);
         viewModel.addObserver(view);
+
     }
 
     public static void main(String[] args) {
