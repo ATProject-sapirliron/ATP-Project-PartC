@@ -47,6 +47,16 @@ public class MyViewModel extends Observable implements Observer {
 
         switch (keyEvent.getCode()) {
 
+            case NUMPAD8 -> direction = MovementDirection.DIGIT8;
+            case NUMPAD2 -> direction = MovementDirection.DIGIT2;
+            case NUMPAD6 -> direction = MovementDirection.DIGIT6;
+            case NUMPAD4 -> direction = MovementDirection.DIGIT4;
+            case NUMPAD1 -> direction = MovementDirection.DIGIT1;
+            case NUMPAD3 -> direction = MovementDirection.DIGIT3;
+            case NUMPAD7 -> direction = MovementDirection.DIGIT7;
+            case NUMPAD9 -> direction = MovementDirection.DIGIT9;
+
+
             case DIGIT8 -> direction = MovementDirection.DIGIT8;
             case DIGIT2 -> direction = MovementDirection.DIGIT2;
             case DIGIT6 -> direction = MovementDirection.DIGIT6;

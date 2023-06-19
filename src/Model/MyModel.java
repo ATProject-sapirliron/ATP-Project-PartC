@@ -1,13 +1,27 @@
 package Model;
 
+import Client.*;
+import IO.MyDecompressorInputStream;
+import Server.Server;
+import Server.*;
 import algorithms.mazeGenerators.Maze;
 import algorithms.mazeGenerators.MyMazeGenerator;
-import algorithms.search.BestFirstSearch;
-import algorithms.search.ISearchingAlgorithm;
-import algorithms.search.SearchableMaze;
-import algorithms.search.Solution;
+import algorithms.search.*;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
+import javafx.scene.control.DialogPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -18,6 +32,8 @@ public class MyModel extends Observable implements IModel{
     private Solution solution;
 
     private MyMazeGenerator generator;
+    Server mazeGeneratingServer;
+    Server solveSearchProblemServer;
 
 
     public MyModel(){
@@ -25,6 +41,10 @@ public class MyModel extends Observable implements IModel{
         this.maze = null;
         PlayerRow = 0;
         PlayerCol = 0;
+        mazeGeneratingServer = new Server(5400, 1000, new ServerStrategyGenerateMaze());
+        solveSearchProblemServer = new Server(5401, 1000, new ServerStrategySolveSearchProblem());
+        solveSearchProblemServer.start();
+        mazeGeneratingServer.start();
     }
 
     public int getPlayerRow() {
@@ -35,6 +55,7 @@ public class MyModel extends Observable implements IModel{
         return PlayerCol;
     }
 
+    /*
     @Override
     public void generateMaze(int rows, int cols) {
         maze = generator.generate(rows,cols);
@@ -42,7 +63,7 @@ public class MyModel extends Observable implements IModel{
         PlayerCol = 0;
         setChanged();
         notifyObservers("maze generated");
-    }
+    }*/
 
     @Override
     public Maze getMaze() {
@@ -83,10 +104,9 @@ public class MyModel extends Observable implements IModel{
                 }
             }
             case DIGIT1 -> {
-                if((checkIfCanMoveDown(PlayerRow,PlayerCol)!=PlayerRow)&&(checkIfCanMoveLeft(PlayerRow,PlayerCol)!=PlayerCol)&&
-                        (PlayerRow+1>=0)&&(PlayerCol-1<=maze.getCol()-1)&&(maze.getplacevalue(PlayerRow+1, PlayerCol-1)==0)){
-                    PlayerRow = checkIfCanMoveDown(PlayerRow, PlayerCol);
-                    PlayerCol = checkIfCanMoveLeft(PlayerRow, PlayerCol);
+                if(checkIfCanMoveDownLeft()){
+                    PlayerRow +=1;
+                    PlayerCol -=1;
                     if(PlayerRow != row){
                         setChanged();
                         notifyObservers("player moved");
@@ -94,10 +114,9 @@ public class MyModel extends Observable implements IModel{
                 }
             }
             case DIGIT3 -> {
-                if((checkIfCanMoveDown(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveRight(PlayerRow, PlayerCol)!=PlayerCol)&&
-                        (PlayerRow+1>=0)&&(PlayerCol+1<=maze.getCol()-1)&&(maze.getplacevalue(PlayerRow+1, PlayerCol+1)==0)){
-                    PlayerRow = checkIfCanMoveDown(PlayerRow, PlayerCol);
-                    PlayerCol = checkIfCanMoveRight(PlayerRow, PlayerCol);
+                if(checkIfCanMoveDownRight()){
+                    PlayerRow +=1;
+                    PlayerCol +=1;
                     if(PlayerRow != row){
                         setChanged();
                         notifyObservers("player moved");
@@ -105,10 +124,9 @@ public class MyModel extends Observable implements IModel{
                 }
             }
             case DIGIT7 -> {
-                if((checkIfCanMoveUp(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveLeft(PlayerRow, PlayerCol)!=PlayerCol)&&
-                        (PlayerRow-1>=0)&&(PlayerCol-1<=maze.getCol()-1)&&(maze.getplacevalue(PlayerRow-1, PlayerCol-1)==0)){
-                    PlayerRow = checkIfCanMoveUp(PlayerRow, PlayerCol);
-                    PlayerCol = checkIfCanMoveLeft(PlayerRow, PlayerCol);
+                if(checkIfCanMoveUpLeft()){
+                    PlayerRow -=1;
+                    PlayerCol -=1;
                     if(PlayerRow != row){
                         setChanged();
                         notifyObservers("player moved");
@@ -116,10 +134,9 @@ public class MyModel extends Observable implements IModel{
                 }
             }
             case DIGIT9 -> {
-                if((checkIfCanMoveUp(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveRight(PlayerRow, PlayerCol)!=PlayerCol)&&
-                        (PlayerRow-1>=0)&&(PlayerCol+1<=maze.getCol()-1)&&(maze.getplacevalue(PlayerRow-1, PlayerCol+1)==0)){
-                    PlayerRow = checkIfCanMoveUp(PlayerRow, PlayerCol);
-                    PlayerCol = checkIfCanMoveRight(PlayerRow, PlayerCol);
+                if(checkIfCanMoveUpRight()){
+                    PlayerRow -=1;
+                    PlayerCol +=1;
                     if(PlayerRow != row){
                         setChanged();
                         notifyObservers("player moved");
@@ -129,8 +146,19 @@ public class MyModel extends Observable implements IModel{
         }
         if(PlayerRow==maze.getRow()-1 && PlayerCol == maze.getCol()-1){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Game End!");
-            alert.show();
+            alert.setTitle("Game End");
+            alert.setHeaderText(null);
+            alert.setContentText("Congrats!");
+            alert.getDialogPane().setGraphic(null);
+            DialogPane dialogPane = alert.getDialogPane();
+            BackgroundFill backgroundFill = new BackgroundFill(Color.rgb(222,119,224), CornerRadii.EMPTY, Insets.EMPTY);
+            Background background = new Background(backgroundFill);
+            dialogPane.setBackground(background);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+            alert.showAndWait();
+            PlayerRow = 0;
+            PlayerCol = 0;
         }
     }
 
@@ -139,6 +167,7 @@ public class MyModel extends Observable implements IModel{
         this.addObserver(o);
     }
 
+    /*
     @Override
     public void solveMaze() {
         SearchableMaze searchableMaze = new SearchableMaze(maze);
@@ -147,6 +176,8 @@ public class MyModel extends Observable implements IModel{
         setChanged();
         notifyObservers("maze solved");
     }
+     */
+
     @Override
     public Solution getSolution() {
         return solution;
@@ -184,4 +215,99 @@ public class MyModel extends Observable implements IModel{
         }
         return col;
     }
+
+    //digit 7
+    public boolean checkIfCanMoveUpLeft(){
+        if(((checkIfCanMoveUp(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveLeft(PlayerRow-1, PlayerCol)!=PlayerCol))||
+        ((checkIfCanMoveLeft(PlayerRow, PlayerCol)!=PlayerCol)&&(checkIfCanMoveUp(PlayerRow, PlayerCol-1)!=PlayerRow))){
+            return true;
+        }
+        return false;
+    }
+
+    //digit 9
+    public boolean checkIfCanMoveUpRight(){
+        if(((checkIfCanMoveUp(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveRight(PlayerRow-1, PlayerCol)!=PlayerCol))||
+                ((checkIfCanMoveRight(PlayerRow, PlayerCol)!=PlayerCol)&&(checkIfCanMoveUp(PlayerRow, PlayerCol+1)!=PlayerRow))){
+            return true;
+        }
+        return false;
+    }
+
+    //digit 1
+    public boolean checkIfCanMoveDownLeft(){
+        if(((checkIfCanMoveDown(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveLeft(PlayerRow+1, PlayerCol)!=PlayerCol))||
+                ((checkIfCanMoveLeft(PlayerRow, PlayerCol)!=PlayerCol)&&(checkIfCanMoveDown(PlayerRow, PlayerCol-1)!=PlayerRow))){
+            return true;
+        }
+        return false;
+    }
+
+    //digit 3
+    public boolean checkIfCanMoveDownRight(){
+        if(((checkIfCanMoveDown(PlayerRow, PlayerCol)!=PlayerRow)&&(checkIfCanMoveRight(PlayerRow+1, PlayerCol)!=PlayerCol))||
+                ((checkIfCanMoveRight(PlayerRow, PlayerCol)!=PlayerCol)&&(checkIfCanMoveDown(PlayerRow, PlayerCol+1)!=PlayerRow))){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void generateMaze(int rows, int cols) {
+        try {
+            Client client = new Client(InetAddress.getLocalHost(), 5400, new IClientStrategy() {
+                public void clientStrategy(InputStream inFromServer, OutputStream outToServer) {
+                    try {
+                        ObjectOutputStream toServer = new ObjectOutputStream(outToServer);
+                        ObjectInputStream fromServer = new ObjectInputStream(inFromServer);
+                        toServer.flush();
+                        int[] mazeDimensions = new int[]{rows, cols};
+                        toServer.writeObject(mazeDimensions);
+                        toServer.flush();
+                        byte[] compressedMaze = (byte[])fromServer.readObject();
+                        InputStream is = new MyDecompressorInputStream(new ByteArrayInputStream(compressedMaze));
+                        int sum = 0;
+                        sum = 2+ ((rows+256)/256)+((cols+256)/256)+(rows*cols);
+                        byte[] decompressedMaze = new byte[sum];
+                        is.read(decompressedMaze);
+                        maze = new Maze(decompressedMaze);
+                        setChanged();
+                        notifyObservers("maze generated");
+                    } catch (Exception var10) {
+                        var10.printStackTrace();
+                    }
+                }
+            });
+            client.communicateWithServer();
+        } catch (UnknownHostException var1) {
+            var1.printStackTrace();
+        }
+    }
+
+    @Override
+    public void solveMaze() {
+        try {
+            Client client = new Client(InetAddress.getLocalHost(), 5401, new IClientStrategy() {
+                public void clientStrategy(InputStream inFromServer, OutputStream outToServer) {
+                    try {
+                        ObjectOutputStream toServer = new ObjectOutputStream(outToServer);
+                        ObjectInputStream fromServer = new ObjectInputStream(inFromServer);
+                        toServer.flush();
+                        toServer.writeObject(maze);
+                        toServer.flush();
+                        solution = (Solution)fromServer.readObject();
+                        setChanged();
+                        notifyObservers("maze solved");
+                    } catch (Exception var10) {
+                        var10.printStackTrace();
+                    }
+                }
+            });
+            client.communicateWithServer();
+        } catch (UnknownHostException var1) {
+            var1.printStackTrace();
+        }
+
+    }
+
 }

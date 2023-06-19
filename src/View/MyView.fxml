@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import View.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController" style="-fx-background-color: LAVENDER;">
+<?import View.MazeDisplayer?>
+<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController" style="-fx-background-image: url('images/candy.jpg');">
   <left>
     <VBox prefHeight="200.0" prefWidth="178.0" spacing="5.0" BorderPane.alignment="CENTER">
       <children>
@@ -22,19 +21,17 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           </rowConstraints>
-          <Label text="Maze rows:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-          <Label text="Maze columns:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-          <TextField fx:id="textField_mazeRows" text="10" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-          <TextField fx:id="textField_mazeColumns" text="10" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-          <Button onAction="#generateMaze" prefHeight="25.0" prefWidth="167.0" text="Generate Maze" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-          <Button cancelButton="true" onAction="#solveMaze" prefHeight="25.0" prefWidth="167.0" text="Solve Maze" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+            <Label text="Maze rows:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label text="Maze columns:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+          <TextField fx:id="textField_mazeRows" text="10" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+          <TextField fx:id="textField_mazeColumns" text="10" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+          <Button onAction="#generateMaze" prefHeight="25.0" prefWidth="167.0" text="Generate Maze" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" styleClass="shadow-button" />
+          <Button cancelButton="true" onAction="#solveMaze" prefHeight="25.0" prefWidth="167.0" text="Solve Maze" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3" styleClass="shadow-button" />
           <Label text="Player Row = " GridPane.rowIndex="4" />
           <Label text="Player Col = " GridPane.rowIndex="5" />
           <Label fx:id="playerRow" GridPane.columnIndex="1" GridPane.rowIndex="4" />
           <Label fx:id="playerCol" GridPane.columnIndex="1" GridPane.rowIndex="5" />
         </GridPane>
-            <Button mnemonicParsing="false" text="Save" />
-            <Button mnemonicParsing="false" text="Load" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -55,18 +52,29 @@
           <menus>
             <Menu mnemonicParsing="false" text="File">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open" />
-                <MenuItem mnemonicParsing="false" text="Close" />
+                <MenuItem mnemonicParsing="false" text="New" />
+                <MenuItem mnemonicParsing="false" text="Save" />
+                <MenuItem mnemonicParsing="false" onAction="#openFile" text="Load" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
+            <Menu mnemonicParsing="false" text="Options">
               <items>
-                <MenuItem mnemonicParsing="false" text="Delete" />
+                <MenuItem mnemonicParsing="false" onAction="#handleProperties" text="Properties" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="Help" />
+            </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="About">
               <items>
-                <MenuItem mnemonicParsing="false" text="About" />
+                <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Exit">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
               </items>
             </Menu>
           </menus>
@@ -77,7 +85,7 @@
   <center>
     <Pane BorderPane.alignment="CENTER">
       <children>
-        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.png" imageFileNameWall="./resources/images/chocolate.jpg" layoutX="40.0" layoutY="15.0" onKeyPressed="#keyPressed" width="700.0" />
+        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.png" imageFileNameWall="./resources/images/chocolate.jpg" layoutX="40.0" layoutY="15.0" onKeyPressed="#keyPressed" width="700.0" onScroll="#handleScroll" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

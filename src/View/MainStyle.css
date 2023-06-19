@@ -2,6 +2,33 @@
     -fx-background-color: bisque;
 }
 
+
+.shadow-button {
+    -fx-background-color:
+            linear-gradient(#D7BDE2, #8E44AD),
+            linear-gradient(#D7BDE2, #AF7AC5),
+            linear-gradient(#AF7AC5, #8E44AD),
+            linear-gradient(#D7BDE2 0%, #AF7AC5 50%, #8E44AD 100%),
+            linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 20;
+    -fx-background-insets: 0,1,2,3,0;
+    -fx-text-fill: #FDFEFE;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 5 20 5 20;
+}
+
+.shadow-button:pressed {
+    -fx-translate-x: 1px;
+    -fx-translate-y: 1px;
+}
+
+.shadow-button:focused {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0, 0), Inner Shadow(gaussian, rgba(255, 255, 255, 0.5), 10, 0.5, 0, 0);
+    -fx-translate-x: 1px;
+    -fx-translate-y: 1px;
+}
+
 Button {
     -fx-text-fill: white;
     -fx-font-family: "Arial Narrow";
@@ -18,4 +45,8 @@ Button:hover {
     -fx-text-fill: -fx-text-base-color;
     -fx-alignment: CENTER;
     -fx-content-display: LEFT;
+}
+
+Label{
+    -fx-font-weight: bold;
 }

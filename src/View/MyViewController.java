@@ -1,27 +1,27 @@
 package View;
 
+import Server.Configurations;
 import ViewModel.MyViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.input.ScrollEvent;
 import javafx.stage.FileChooser;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.File;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
-import javafx.fxml.Initializable;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 
 public class MyViewController implements IView, Observer {
@@ -107,15 +107,6 @@ public class MyViewController implements IView, Observer {
 
     }
 
-    public void openFile(ActionEvent actionEvent) {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Open maze");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Maze files (*.maze)", "*.maze"));
-        fc.setInitialDirectory(new File("./resources"));
-        File chosen = fc.showOpenDialog(null);
-        //...
-    }
-
     public void keyPressed(KeyEvent keyEvent) {
         viewModel.movePlayer(keyEvent);
         keyEvent.consume();
@@ -163,5 +154,103 @@ public class MyViewController implements IView, Observer {
 
     private void mazeSolved() {
         mazeDisplayer.setSolution(viewModel.getSolution());
+        System.out.println("drawing solution...");
     }
+
+    public void openFile(ActionEvent actionEvent) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Open maze");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Maze files (*.maze)", "*.maze"));
+        fc.setInitialDirectory(new File("./resources"));
+        File chosen = fc.showOpenDialog(null);
+        //...
+    }
+
+
+    public void handleExit(ActionEvent actionEvent) {
+        System.out.println("Exit Game");
+        System.exit(0);
+    }
+
+    public void handleHelp(ActionEvent actionEvent){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Help");
+        alert.setHeaderText(null);
+        alert.setContentText("1.Objective:\n" +
+                "Your goal is to help the Carine navigate through the choclate maze and reach the cookie.\n" +
+                "\n" +
+                "2.Controls:\n" +
+                "Use the numbers on your keyboard to move the character up, down, left, right, up-left, up-right, down-left or down-right.\n" +
+                "Explore the maze by moving Carine one step at a time.\n" +
+                "\n" +
+                "3.Rules:\n" +
+                "You cannot move through choclate walls. Choclate walls are obstacles that block your path.\n" +
+                "You must find the correct path to the exit without getting trapped.\n" +
+                "\n" +
+                "4.Tips:\n" +
+                "Pay attention to the maze layout and look for openings or pathways.\n" +
+                "Plan your moves and think ahead before making each move.\n" +
+                "Take your time and be patient. Maze-solving requires concentration and problem-solving skills.\n" +
+                "Don't be afraid to backtrack if you reach a dead end. Sometimes you need to go back to find a different route.\n" +
+                "\n" +
+                "5.Game Over:\n" +
+                "If Carine reached the cookie, you win! Congratulations!\n" +
+                "If you get stuck and can't find a way to the exit, don't worry. You can try again or ask for help.\n" +
+                "Have Fun!\n" +
+                "\n" +
+                "Don't forget to celebrate your achievements along the way!\n" +
+                "Remember, maze games are meant to be fun and challenging. Enjoy the journey of exploring and solving the maze puzzles!\n");
+
+        alert.showAndWait();
+    }
+
+    public void handleProperties(ActionEvent actionEvent){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Properties");
+        alert.setHeaderText(null);
+        String allProperties ="";
+        allProperties += "Maze Generating Algorithm: "+ Configurations.getInstance().getMazeGeneratingAlgorithm()+"\n";
+        allProperties += "Maze Searching Algorithm: "+ Configurations.getInstance().getMazeSearchingAlgorithm()+"\n";
+        allProperties += "Thread Pool Size: "+ Configurations.getInstance().getThreadPoolSize()+"\n";
+        alert.setContentText(allProperties);
+        alert.showAndWait();
+    }
+
+    public void handleAbout(ActionEvent actionEvent){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText(null);
+        String allProperties ="Programmer Names: Liron Miriam Shemen, Sapir Tzaig\n";
+        allProperties+= "We used this 3 algorithm in order to solve the maze. you can use each one of them:\n";
+        allProperties+= "Best First Search, Breadth First Search, Depth First Search\n";
+        allProperties+= "Try them out! \n";
+        allProperties+= "Enjoy \n";
+        alert.setContentText(allProperties);
+        alert.showAndWait();
+    }
+
+    public void zoomIn() {
+        mazeDisplayer.zoomIn();
+    }
+
+    public void zoomOut() {
+        mazeDisplayer.zoomOut();
+    }
+
+    @FXML
+    private void handleScroll(ScrollEvent event) {
+        if (event.isControlDown()) {
+            double delta = event.getDeltaY();
+            if (delta > 0) {
+                // Zoom in
+                mazeDisplayer.zoomIn();
+            } else if (delta < 0) {
+                // Zoom out
+                mazeDisplayer.zoomOut();
+            }
+            event.consume();
+        }
+    }
+
+
 }

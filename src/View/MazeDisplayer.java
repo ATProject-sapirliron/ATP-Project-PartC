@@ -4,9 +4,11 @@ import algorithms.mazeGenerators.Maze;
 import algorithms.search.Solution;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
 import java.io.FileInputStream;
@@ -23,7 +25,7 @@ public class MazeDisplayer extends Canvas {
     StringProperty imageFileNameWall = new SimpleStringProperty();
     StringProperty imageFileNameGoal = new SimpleStringProperty();
     StringProperty imageFileNamePlayer = new SimpleStringProperty();
-
+    private static double zoomFactor = 1.0;
 
     public int getPlayerRow() {
         return playerRow;
@@ -34,6 +36,10 @@ public class MazeDisplayer extends Canvas {
     }
 
     public void setPlayerPosition(int row, int col) {
+        if(playerCol!=col || playerRow!=row){
+            System.out.println("player moved...");
+
+        }
         this.playerRow = row;
         this.playerCol = col;
         draw();
@@ -79,6 +85,7 @@ public class MazeDisplayer extends Canvas {
 
     public void drawMaze(Maze maze) {
         this.maze = maze;
+        System.out.println("maze generated...");
         draw();
     }
 
@@ -89,8 +96,8 @@ public class MazeDisplayer extends Canvas {
             int rows = maze.getRow();
             int cols = maze.getCol();
 
-            double cellHeight = canvasHeight / rows;
-            double cellWidth = canvasWidth / cols;
+            double cellHeight = canvasHeight / rows* zoomFactor;
+            double cellWidth = canvasWidth / cols* zoomFactor;
 
             GraphicsContext graphicsContext = getGraphicsContext2D();
             //clear the canvas:
@@ -107,16 +114,17 @@ public class MazeDisplayer extends Canvas {
         }
     }
 
+
+
     private void drawSolution(GraphicsContext graphicsContext, double cellHeight, double cellWidth) {
         // need to be implemented
         for(int i=0; i<solution.getSolutionPath().size();i++){
             int r = solution.getSolutionPath().get(i).getRow();
             int c = solution.getSolutionPath().get(i).getCol();
             if(maze.getplacevalue(r,c)==0){
-                paintPosition(r,c);
+                paintPosition(r,c, graphicsContext);
             }
         }
-        System.out.println("drawing solution...");
     }
 
     private void drawMazeWalls(GraphicsContext graphicsContext, double cellHeight, double cellWidth, int rows, int cols) {
@@ -178,25 +186,24 @@ public class MazeDisplayer extends Canvas {
             graphicsContext.drawImage(GoalImage, x, y, cellWidth, cellHeight);
     }
 
-    public void paintPosition(int r,int c) {
+    public void paintPosition(int r,int c, GraphicsContext graphicsContext) {
         if (maze != null) {
             double canvasHeight = getHeight();
             double canvasWidth = getWidth();
             int rows = maze.getRow();
             int cols = maze.getCol();
+            graphicsContext.setFill(Color.TRANSPARENT);
 
             double cellHeight = canvasHeight / rows;
             double cellWidth = canvasWidth / cols;
 
-
-            GraphicsContext graphicsContext = getGraphicsContext2D();
             double x = c * cellWidth;
             double y = r * cellHeight;
 
             // Clear the entire cell
             graphicsContext.clearRect(x, y, cellWidth, cellHeight);
             // Fill the cell with lavender color
-            graphicsContext.setFill(Color.LAVENDER);
+            //graphicsContext.setFill(Color.LAVENDER);
             graphicsContext.fillRect(x, y, cellWidth, cellHeight);
 
             if(this.maze.getplacevalue(r,c)==0){
@@ -209,21 +216,28 @@ public class MazeDisplayer extends Canvas {
     }
 
     public void resetMazeColor(GraphicsContext graphicsContext, double cellHeight, double cellWidth) {
-        graphicsContext.setFill(Color.LAVENDER);
+        //graphicsContext.setFill(Color.LAVENDER);
         if (maze != null) {
             for (int r = 0; r < maze.getRow(); r++) {
                 for (int c = 0; c < maze.getCol(); c++) {
                     double x = c * cellWidth;
                     double y = r * cellHeight;
                     if (maze.getplacevalue(r, c) == 0) {
-                        graphicsContext.fillRect(x, y, cellWidth, cellHeight);
+                        graphicsContext.clearRect(x, y, cellWidth, cellHeight);
                     }
                 }
             }
         }
     }
 
+    public void zoomIn() {
+        zoomFactor *= 1.1; // Increase the zoom factor by 10%
+        draw();
+    }
 
-
+    public void zoomOut() {
+        zoomFactor /= 1.1; // Decrease the zoom factor by 10%
+        draw();
+    }
 
 }
