@@ -17,11 +17,13 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MyView.fxml"));
         Parent root = fxmlLoader.load();
         primaryStage.setTitle("Candy Maze");
-        primaryStage.setScene(new Scene(root, 1000, 700));
-        primaryStage.show();
+        Scene scene = new Scene(root, 1000, 700);
+        primaryStage.setScene(scene);
         IModel model = new MyModel();
         MyViewModel viewModel = new MyViewModel(model);
         MyViewController view = fxmlLoader.getController();
+        view.setResize(scene);
+        primaryStage.show();
         String filepath = "resources/music/Untitled.wav";
         view.playMusic(filepath);
         view.setViewModel(viewModel);

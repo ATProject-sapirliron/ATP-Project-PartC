@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class MazeDisplayer extends Canvas {
     private Maze maze;
@@ -238,5 +239,18 @@ public class MazeDisplayer extends Canvas {
     public void zoomOut() {
         zoomFactor /= 1.1; // Decrease the zoom factor by 10%
         draw();
+    }
+
+
+    public void updateCanvasWidth(double oldvalue, double newValue) {
+        double val = newValue/oldvalue;
+        setWidth(val*getWidth());
+        drawMaze(this.maze);
+    }
+
+    public void updateCanvasHeight(double oldvalue, double newValue) {
+        double val = newValue/oldvalue;
+        setHeight(val*getHeight());
+        drawMaze(this.maze);
     }
 }

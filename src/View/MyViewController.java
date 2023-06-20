@@ -407,4 +407,12 @@ public class MyViewController implements IView, Observer {
         return amIValid;
     }
 
+    public void setResize(Scene scene){
+        scene.widthProperty().addListener((observable,oldvalue, newValue)->{
+            mazeDisplayer.updateCanvasWidth((double)oldvalue,(double)newValue);
+        });
+        scene.heightProperty().addListener((observable,oldvalue, newValue)->{
+            mazeDisplayer.updateCanvasHeight((double)oldvalue,(double)newValue);
+        });
+    }
 }
