@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import View.MazeDisplayer?>
-<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController" style="-fx-background-image: url('images/candy.jpg');">
+<BorderPane onMouseClicked="#mouseClicked" prefHeight="408.0" prefWidth="594.0" stylesheets="@MainStyle.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.MyViewController" style="-fx-background-image: url('./images/candy.jpg');">
   <left>
     <VBox prefHeight="200.0" prefWidth="178.0" spacing="5.0" BorderPane.alignment="CENTER">
       <children>
@@ -52,8 +52,8 @@
           <menus>
             <Menu mnemonicParsing="false" text="File">
               <items>
-                <MenuItem mnemonicParsing="false" text="New" />
-                <MenuItem mnemonicParsing="false" text="Save" />
+                <MenuItem mnemonicParsing="false" onAction="#CreateNew" text="New" />
+                <MenuItem mnemonicParsing="false" onAction ="#saveFile" text="Save" />
                 <MenuItem mnemonicParsing="false" onAction="#openFile" text="Load" />
               </items>
             </Menu>
@@ -85,7 +85,7 @@
   <center>
     <Pane BorderPane.alignment="CENTER">
       <children>
-        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.png" imageFileNameWall="./resources/images/chocolate.jpg" layoutX="40.0" layoutY="15.0" onKeyPressed="#keyPressed" width="700.0" onScroll="#handleScroll" />
+        <MazeDisplayer fx:id="mazeDisplayer" height="650.0" imageFileNameGoal="./resources/images/cookie.png" imageFileNamePlayer="./resources/images/carin.png" imageFileNameWall="./resources/images/chocolate.jpg" layoutX="40.0" layoutY="15.0" onKeyPressed="#keyPressed" width="700.0" onScroll="#handleScroll" onMouseClicked="#MovePlayerByMouse" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

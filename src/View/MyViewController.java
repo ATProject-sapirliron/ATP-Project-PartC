@@ -2,22 +2,34 @@ package View;
 
 import Server.Configurations;
 import ViewModel.MyViewModel;
+import algorithms.mazeGenerators.Maze;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -31,10 +43,7 @@ public class MyViewController implements IView, Observer {
     public Label playerRow;
     public Label playerCol;
     private MyViewModel viewModel;
-
     private Clip theclip;
-
-
     StringProperty updatePlayerRow = new SimpleStringProperty();
     StringProperty updatePlayerCol = new SimpleStringProperty();
 
@@ -64,10 +73,42 @@ public class MyViewController implements IView, Observer {
     }
 
     public void generateMaze(ActionEvent actionEvent) {
+        if(!checkMe(textField_mazeRows.getText())|| !checkMe(textField_mazeColumns.getText())){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid Arguments!");
+            alert.getDialogPane().setGraphic(null);
+            DialogPane dialogPane = alert.getDialogPane();
+            BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+            Background background = new Background(backgroundFill);
+            dialogPane.setBackground(background);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+            alert.showAndWait();
+            return;
+        }
+        else if(textField_mazeRows.getText().equals("")|| textField_mazeColumns.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Missing Arguments!");
+            alert.getDialogPane().setGraphic(null);
+            DialogPane dialogPane = alert.getDialogPane();
+            BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+            Background background = new Background(backgroundFill);
+            dialogPane.setBackground(background);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+            alert.showAndWait();
+            return;
+        }
         int rows = Integer.valueOf(textField_mazeRows.getText());
         int cols = Integer.valueOf(textField_mazeColumns.getText());
         viewModel.generateMaze(rows, cols);
         setPlayerPosition(0, 0);
+        viewModel.setColChar(0);
+        viewModel.setRowChar(0);
         theclip.stop();
         String filepath = "resources/music/WiliWonka.wav";
         theclip = playMusic(filepath);
@@ -160,10 +201,105 @@ public class MyViewController implements IView, Observer {
     public void openFile(ActionEvent actionEvent) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Open maze");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Maze files (*.maze)", "*.maze"));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Maze files (*.txt)", "*.txt"));
         fc.setInitialDirectory(new File("./resources"));
         File chosen = fc.showOpenDialog(null);
-        //...
+        if (chosen != null) {
+            readMazeFromFile(chosen);
+        }
+    }
+
+    private void readMazeFromFile(File file) {
+        try {
+            // Read the contents of the file
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            String content = "";
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content+=line;
+            }
+            bufferedReader.close();
+            String[] elements = content.split(",");
+            int[] newelements = new int[elements.length];
+            int counter = 0;
+            for(int r=0; r<Integer.parseInt(elements[2]);r++){
+                for(int c=0; c<Integer.parseInt(elements[3]);c++){
+                    newelements[counter] = Integer.parseInt(elements[counter]);
+                    counter++;
+                }
+            }
+            viewModel.callgenerateloadMaze(Integer.parseInt(elements[2]), Integer.parseInt(elements[3]),
+                    Integer.parseInt(elements[0]), Integer.parseInt(elements[1]), newelements);
+        } catch (IOException e) {
+            // Handle the exception if an error occurs while reading the file
+            e.printStackTrace();
+        }
+    }
+
+    public void saveFile(ActionEvent actionEvent) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save");
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Maze files (*.txt)", "*.txt"));
+        fc.setInitialDirectory(new File("./resources"));
+
+        // Set a default file name
+        String defaultFileName = "myMaze.txt";
+        fc.setInitialFileName(defaultFileName);
+
+        // Show the save dialog
+        File chosen = fc.showSaveDialog(null);
+        if (chosen != null) {
+            if(viewModel.getMaze()==null){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Cant save ungenerated maze!");
+                alert.getDialogPane().setGraphic(null);
+                DialogPane dialogPane = alert.getDialogPane();
+                BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+                Background background = new Background(backgroundFill);
+                dialogPane.setBackground(background);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+                alert.showAndWait();
+                return;
+            }
+            saveMazeToFile(chosen);
+        }
+    }
+
+    private void saveMazeToFile(File file) {
+        try {
+            // Write the maze data to the file
+            FileWriter fileWriter = new FileWriter(file);
+
+            // Get the maze data as a string (replace with your actual maze data)
+            String mazeData = viewModel.getRowChar() + ","+viewModel.getColChar()+",";
+            mazeData+= viewModel.getMaze().getRow() +","+ viewModel.getMaze().getCol()+",";
+            for(int r=0; r<viewModel.getMaze().getRow();r++){
+                for(int c=0; c<viewModel.getMaze().getCol();c++){
+                    mazeData+=viewModel.getMaze().getplacevalue(r,c)+",";
+                }
+            }
+            // Write the maze data to the file
+            fileWriter.write(mazeData);
+            fileWriter.close();
+        } catch (IOException e) {
+            // Handle the exception if an error occurs while saving the file
+            e.printStackTrace();
+        }
+    }
+
+    public void CreateNew(ActionEvent actionEvent) {
+        viewModel.generateMaze(10, 10);
+        setPlayerPosition(0, 0);
+        viewModel.setColChar(0);
+        viewModel.setRowChar(0);
+        theclip.stop();
+        String filepath = "resources/music/WiliWonka.wav";
+        theclip = playMusic(filepath);
     }
 
 
@@ -252,5 +388,23 @@ public class MyViewController implements IView, Observer {
         }
     }
 
+    @FXML
+    private void MovePlayerByMouse(MouseEvent event) {
+        if (viewModel.getMaze() != null) {
+            int row = viewModel.getRowChar();
+            int col = viewModel.getColChar();
+            viewModel.moveCharacter(event, mazeDisplayer.getHeight() / viewModel.getMaze().getRow(), mazeDisplayer.getWidth() / viewModel.getMaze().getCol());
+        }
+    }
+
+    public boolean checkMe(String s) {
+        boolean amIValid = false;
+        try {
+            Integer.parseInt(s);
+            amIValid = true;
+        } catch (NumberFormatException e) {
+        }
+        return amIValid;
+    }
 
 }

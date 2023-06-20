@@ -239,5 +239,4 @@ public class MazeDisplayer extends Canvas {
         zoomFactor /= 1.1; // Decrease the zoom factor by 10%
         draw();
     }
-
 }

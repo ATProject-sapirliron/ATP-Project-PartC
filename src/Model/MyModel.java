@@ -55,15 +55,13 @@ public class MyModel extends Observable implements IModel{
         return PlayerCol;
     }
 
-    /*
-    @Override
-    public void generateMaze(int rows, int cols) {
-        maze = generator.generate(rows,cols);
-        PlayerRow = 0;
-        PlayerCol = 0;
-        setChanged();
-        notifyObservers("maze generated");
-    }*/
+    public void setPlayerRow(int playerRow) {
+        PlayerRow = playerRow;
+    }
+
+    public void setPlayerCol(int playerCol) {
+        PlayerCol = playerCol;
+    }
 
     @Override
     public Maze getMaze() {
@@ -72,6 +70,21 @@ public class MyModel extends Observable implements IModel{
 
     @Override
     public void updatePlayerLocation(MovementDirection direction) {
+        if(maze==null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Cant move in ungenerated maze!");
+            alert.getDialogPane().setGraphic(null);
+            DialogPane dialogPane = alert.getDialogPane();
+            BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+            Background background = new Background(backgroundFill);
+            dialogPane.setBackground(background);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+            alert.showAndWait();
+            return;
+        }
         int row = PlayerRow;
         int col = PlayerCol;
         switch (direction){
@@ -167,17 +180,6 @@ public class MyModel extends Observable implements IModel{
         this.addObserver(o);
     }
 
-    /*
-    @Override
-    public void solveMaze() {
-        SearchableMaze searchableMaze = new SearchableMaze(maze);
-        ISearchingAlgorithm searcher = new BestFirstSearch();
-        solution = searcher.solve(searchableMaze);
-        setChanged();
-        notifyObservers("maze solved");
-    }
-     */
-
     @Override
     public Solution getSolution() {
         return solution;
@@ -254,6 +256,21 @@ public class MyModel extends Observable implements IModel{
 
     @Override
     public void generateMaze(int rows, int cols) {
+        if((rows<=0 || cols<=0)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid Arguments!");
+            alert.getDialogPane().setGraphic(null);
+            DialogPane dialogPane = alert.getDialogPane();
+            BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+            Background background = new Background(backgroundFill);
+            dialogPane.setBackground(background);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+            alert.showAndWait();
+            return;
+        }
         try {
             Client client = new Client(InetAddress.getLocalHost(), 5400, new IClientStrategy() {
                 public void clientStrategy(InputStream inFromServer, OutputStream outToServer) {
@@ -298,16 +315,50 @@ public class MyModel extends Observable implements IModel{
                         solution = (Solution)fromServer.readObject();
                         setChanged();
                         notifyObservers("maze solved");
+
                     } catch (Exception var10) {
                         var10.printStackTrace();
                     }
                 }
             });
-            client.communicateWithServer();
+            if(maze!=null){
+                client.communicateWithServer();
+            }
+            else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Can't solve ungenerated maze!");
+                alert.getDialogPane().setGraphic(null);
+                DialogPane dialogPane = alert.getDialogPane();
+                BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
+                Background background = new Background(backgroundFill);
+                dialogPane.setBackground(background);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
+                alert.showAndWait();
+            }
         } catch (UnknownHostException var1) {
             var1.printStackTrace();
         }
 
+    }
+
+    public void generateloadMaze(int row, int col, int playerrow, int playercol, int[] position){
+        maze = generator.generate(row,col);
+        PlayerCol = playercol;
+        PlayerRow = playerrow;
+        int counter = 4;
+        for(int r = 0; r<row; r++){
+            for(int c = 0; c<col; c++){
+                maze.setPlace(r,c,position[counter]);
+                counter++;
+            }
+        }
+        setChanged();
+        notifyObservers("maze generated");
+        setChanged();
+        notifyObservers("player moved");
     }
 
 }

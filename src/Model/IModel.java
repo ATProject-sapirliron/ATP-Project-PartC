@@ -15,4 +15,9 @@ public interface IModel{
     public void solveMaze();
     public Solution getSolution();
 
+    public void setPlayerRow(int playerRow);
+
+    public void setPlayerCol(int playerCol);
+    public void generateloadMaze(int row, int col, int playerrow, int playercol, int[] position);
+
 }
