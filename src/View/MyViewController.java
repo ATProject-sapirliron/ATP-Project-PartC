@@ -336,7 +336,12 @@ public class MyViewController implements IView, Observer {
                 "\n" +
                 "Don't forget to celebrate your achievements along the way!\n" +
                 "Remember, maze games are meant to be fun and challenging. Enjoy the journey of exploring and solving the maze puzzles!\n");
-
+        DialogPane dialogPane = alert.getDialogPane();
+        BackgroundFill backgroundFill = new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY);
+        Background background = new Background(backgroundFill);
+        dialogPane.setBackground(background);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
         alert.showAndWait();
     }
 
@@ -349,6 +354,12 @@ public class MyViewController implements IView, Observer {
         allProperties += "Maze Searching Algorithm: "+ Configurations.getInstance().getMazeSearchingAlgorithm()+"\n";
         allProperties += "Thread Pool Size: "+ Configurations.getInstance().getThreadPoolSize()+"\n";
         alert.setContentText(allProperties);
+        DialogPane dialogPane = alert.getDialogPane();
+        BackgroundFill backgroundFill = new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY);
+        Background background = new Background(backgroundFill);
+        dialogPane.setBackground(background);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
         alert.showAndWait();
     }
 
@@ -362,6 +373,12 @@ public class MyViewController implements IView, Observer {
         allProperties+= "Try them out! \n";
         allProperties+= "Enjoy \n";
         alert.setContentText(allProperties);
+        DialogPane dialogPane = alert.getDialogPane();
+        BackgroundFill backgroundFill = new BackgroundFill(Color.LIGHTBLUE, CornerRadii.EMPTY, Insets.EMPTY);
+        Background background = new Background(backgroundFill);
+        dialogPane.setBackground(background);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/jelly.png")));
         alert.showAndWait();
     }
 
