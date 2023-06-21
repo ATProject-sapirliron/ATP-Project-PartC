@@ -1,0 +1,8 @@
+2023-06-21 16:01:08,477 [JavaFX Application Thread] INFO  Model.MyModel - maze generated
+2023-06-21 16:01:20,744 [JavaFX Application Thread] INFO  Model.MyModel - maze solved
+2023-06-21 16:02:19,278 [JavaFX Application Thread] INFO  Model.MyModel - maze generated
+2023-06-21 19:45:47,367 [JavaFX Application Thread] INFO  Model.MyModel - maze generated
+2023-06-21 19:45:53,042 [JavaFX Application Thread] INFO  Model.MyModel - maze solved
+2023-06-21 19:46:01,723 [JavaFX Application Thread] INFO  Model.MyModel - maze generated
+2023-06-21 20:08:36,847 [JavaFX Application Thread] INFO  Model.MyModel - maze generated
+2023-06-21 20:08:42,066 [JavaFX Application Thread] INFO  Model.MyModel - maze solved
