@@ -19,53 +19,64 @@ import javafx.stage.Stage;
 import java.util.Observable;
 import java.util.Observer;
 
+//this class represents the view model. the view observes it and the view model observes the model.
 public class MyViewModel extends Observable implements Observer {
-    private IModel model;
+    private IModel model; //model instance in order to communicate with it
+
+    //the constructor of the view model
     public MyViewModel(IModel model) {
-        this.model = model;
-        this.model.assignObserver(this);
+        this.model = model; //set the model instance
+        this.model.assignObserver(this); //add the view model as an observer of the model
     }
 
+    //this method updates the observable (view)
     @Override
     public void update(Observable o, Object arg) {
         setChanged();
         notifyObservers(arg);
     }
 
+    //this method returns the maze
     public Maze getMaze() {
         return model.getMaze();
     }
 
+    //this method returns row player position
     public int getRowChar() {
         return model.getPlayerRow();
     }
-    public void setColChar(int col) {
 
+    //this method returns column player position
+    public void setColChar(int col) {
         model.setPlayerCol(col);
     }
 
+    //this method sets row player position
     public void setRowChar(int row) {
         model.setPlayerRow(row);
     }
+
+    //this method sets column player position
     public int getColChar() {
         return model.getPlayerCol();
     }
 
-
+    //this method returns the maze solution
     public Solution getSolution() {
         return model.getSolution();
     }
 
-
+    //this method calls the model to generate the maze
     public void generateMaze(int rows, int cols){
-        model.generateMaze(rows, cols);
+        model.generateMaze(rows, cols); //transform the model the maze sizes
     }
 
+    //this method passes the user request to move the player
     public void movePlayer(KeyEvent keyEvent){
-        MovementDirection direction = null;
+        MovementDirection direction = null; //direction from user
 
         switch (keyEvent.getCode()) {
-
+            //check which key was pressed by keyboard or mouse
             case NUMPAD8 -> direction = MovementDirection.DIGIT8;
             case NUMPAD2 -> direction = MovementDirection.DIGIT2;
             case NUMPAD6 -> direction = MovementDirection.DIGIT6;
@@ -74,7 +85,6 @@ public class MyViewModel extends Observable implements Observer {
             case NUMPAD3 -> direction = MovementDirection.DIGIT3;
             case NUMPAD7 -> direction = MovementDirection.DIGIT7;
             case NUMPAD9 -> direction = MovementDirection.DIGIT9;
-
 
             case DIGIT8 -> direction = MovementDirection.DIGIT8;
             case DIGIT2 -> direction = MovementDirection.DIGIT2;
@@ -88,67 +98,69 @@ public class MyViewModel extends Observable implements Observer {
                 return;
             }
         }
-        //keyEvent.consume();
-        model.updatePlayerLocation(direction);
+        model.updatePlayerLocation(direction); //updates player location on model
     }
 
 
+    //this method solves the maze by passing the request to the model
     public void solveMaze(){
         model.solveMaze();
     }
 
+    //this method moves the character according to the mouse event transformed from the controller
     public void moveCharacter(MouseEvent mouseEvent, double CellHeight, double CellWidth){
-        double mousex = mouseEvent.getX();
-        double mousey = mouseEvent.getY();
+        double mousex = mouseEvent.getX(); //get mouse click x position
+        double mousey = mouseEvent.getY(); //get mouse click y position
 
-        int row = (int)(mousey/CellHeight);
-        int col = (int)(mousex/CellWidth);
+        int row = (int)(mousey/CellHeight); //get row calculation on maze
+        int col = (int)(mousex/CellWidth); //get col calculation on maze
         MovementDirection direction = null;
         //1
-        if(row==this.getRowChar()+1 && col==getColChar()-1){
-            direction = MovementDirection.DIGIT1;
-            model.updatePlayerLocation(direction);
+        if(row==this.getRowChar()+1 && col==getColChar()-1){ //checks which movement is it
+            direction = MovementDirection.DIGIT1; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //2
-        else if(row==this.getRowChar()+1 && col==getColChar()){
-            direction = MovementDirection.DIGIT2;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar()+1 && col==getColChar()){ //checks which movement is it
+            direction = MovementDirection.DIGIT2; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //3
-        else if(row==this.getRowChar()+1 && col==getColChar()+1){
-            direction = MovementDirection.DIGIT3;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar()+1 && col==getColChar()+1){ //checks which movement is it
+            direction = MovementDirection.DIGIT3; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //4
-        else if(row==this.getRowChar() && col==getColChar()-1){
-            direction = MovementDirection.DIGIT4;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar() && col==getColChar()-1){ //checks which movement is it
+            direction = MovementDirection.DIGIT4; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //6
-        else if(row==this.getRowChar() && col==getColChar()+1){
-            direction = MovementDirection.DIGIT6;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar() && col==getColChar()+1){ //checks which movement is it
+            direction = MovementDirection.DIGIT6; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //7
-        else if(row==this.getRowChar()-1 && col==getColChar()-1){
-            direction = MovementDirection.DIGIT7;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar()-1 && col==getColChar()-1){ //checks which movement is it
+            direction = MovementDirection.DIGIT7; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //8
-        else if(row==this.getRowChar()-1 && col==getColChar()){
-            direction = MovementDirection.DIGIT8;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar()-1 && col==getColChar()){ //checks which movement is it
+            direction = MovementDirection.DIGIT8; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
         //9
-        else if(row==this.getRowChar()-1 && col==getColChar()+1){
-            direction = MovementDirection.DIGIT9;
-            model.updatePlayerLocation(direction);
+        else if(row==this.getRowChar()-1 && col==getColChar()+1){ //checks which movement is it
+            direction = MovementDirection.DIGIT9; //set direction
+            model.updatePlayerLocation(direction); //updates player location
         }
-        else{
+        else{ //if movment is not valid pop an alert
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("Invalid Step!\n Player cant move more than one step at a time!");
+            //alert design
             alert.getDialogPane().setGraphic(null);
             DialogPane dialogPane = alert.getDialogPane();
             BackgroundFill backgroundFill = new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY);
@@ -160,6 +172,7 @@ public class MyViewModel extends Observable implements Observer {
         }
     }
 
+    //this method calls the model to generate the loaded maze sent from the view
     public void callgenerateloadMaze(int row, int col, int playerrow, int playercol, int[] position){
         model.generateloadMaze(row, col, playerrow, playercol, position);
     }
