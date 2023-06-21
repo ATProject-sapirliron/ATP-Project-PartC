@@ -123,7 +123,7 @@ public class MazeDisplayer extends Canvas {
             int r = solution.getSolutionPath().get(i).getRow();
             int c = solution.getSolutionPath().get(i).getCol();
             if(maze.getplacevalue(r,c)==0){
-                paintPosition(r,c, graphicsContext);
+                paintPosition(r,c, graphicsContext, cellHeight, cellWidth);
             }
         }
     }
@@ -187,16 +187,12 @@ public class MazeDisplayer extends Canvas {
             graphicsContext.drawImage(GoalImage, x, y, cellWidth, cellHeight);
     }
 
-    public void paintPosition(int r,int c, GraphicsContext graphicsContext) {
+    public void paintPosition(int r,int c, GraphicsContext graphicsContext, double Height, double Width) {
         if (maze != null) {
-            double canvasHeight = getHeight();
-            double canvasWidth = getWidth();
-            int rows = maze.getRow();
-            int cols = maze.getCol();
             graphicsContext.setFill(Color.TRANSPARENT);
 
-            double cellHeight = canvasHeight / rows;
-            double cellWidth = canvasWidth / cols;
+            double cellHeight = Height;
+            double cellWidth = Width;
 
             double x = c * cellWidth;
             double y = r * cellHeight;

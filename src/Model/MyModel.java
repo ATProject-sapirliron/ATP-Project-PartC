@@ -24,6 +24,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MyModel extends Observable implements IModel{
     private Maze maze;
@@ -35,6 +37,7 @@ public class MyModel extends Observable implements IModel{
     Server mazeGeneratingServer;
     Server solveSearchProblemServer;
 
+    private final Logger log = LogManager.getLogger(MyModel.class);
 
     public MyModel(){
         generator = new MyMazeGenerator();
@@ -45,6 +48,7 @@ public class MyModel extends Observable implements IModel{
         solveSearchProblemServer = new Server(5401, 1000, new ServerStrategySolveSearchProblem());
         solveSearchProblemServer.start();
         mazeGeneratingServer.start();
+
     }
 
     public int getPlayerRow() {
@@ -290,6 +294,7 @@ public class MyModel extends Observable implements IModel{
                         maze = new Maze(decompressedMaze);
                         setChanged();
                         notifyObservers("maze generated");
+                        log.info("maze generated");
                     } catch (Exception var10) {
                         var10.printStackTrace();
                     }
@@ -315,6 +320,7 @@ public class MyModel extends Observable implements IModel{
                         solution = (Solution)fromServer.readObject();
                         setChanged();
                         notifyObservers("maze solved");
+                        log.info("maze solved");
 
                     } catch (Exception var10) {
                         var10.printStackTrace();
@@ -325,6 +331,7 @@ public class MyModel extends Observable implements IModel{
                 client.communicateWithServer();
             }
             else{
+                log.error("Can't solve ungenerated maze!");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
